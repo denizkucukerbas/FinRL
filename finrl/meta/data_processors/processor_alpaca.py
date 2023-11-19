@@ -51,7 +51,7 @@ class AlpacaProcessor:
         # from trepan.api import debug;debug()
         # filter opening time of the New York Stock Exchange (NYSE) (from 9:30 am to 4:00 pm) if time_interval < 1D
         day_delta = 86400000000000  # pd.Timedelta('1D').delta == 86400000000000
-        if pd.Timedelta(time_interval).total_seconds() < day_delta:
+        if pd.Timedelta(time_interval).value < day_delta:
             NYSE_open_hour = "13:30"  # in UTC
             NYSE_close_hour = "19:59"  # in UTC
             data_df = barset.between_time(NYSE_open_hour, NYSE_close_hour)
@@ -94,7 +94,8 @@ class AlpacaProcessor:
             tic_df = df[df.tic == tic]
             for i in range(tic_df.shape[0]):
                 # tmp_df.iloc[i] = tic_df.iloc[i][
-                NY_timestamp = pd.Timestamp(tic_df.iloc[i]["timestamp"])-pd.Timedelta(hours=4) # # utc to ny; str to Timestamp
+                NY_timestamp = pd.Timestamp(tic_df.iloc[i]["timestamp"]).tz_convert(NY)
+ # # utc to ny; str to Timestamp
                 tmp_df.loc[NY_timestamp] = tic_df.iloc[i][
                         ["open", "high", "low", "close", "volume"]
                 ]
